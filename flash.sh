@@ -25,6 +25,11 @@ rm -rf $OUTPUT_DIR
 mkdir $OUTPUT_DIR
 ./build-fip.sh odroid-c4 $UBOOT_BIN_PATH $OUTPUT_DIR
 
-dd if=$OUTPUT_DIR/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=512 skip=1 seek=1
-dd if=$OUTPUT_DIR/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=1 count=440
-
+if [ -w "$1" ]; then
+	dd if=$OUTPUT_DIR/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=512 skip=1 seek=1
+	dd if=$OUTPUT_DIR/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=1 count=440
+else
+	echo "Target device isn't writable for us! Attempting to use sudo..."
+	sudo dd if=$OUTPUT_DIR/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=512 skip=1 seek=1
+	sudo dd if=$OUTPUT_DIR/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=1 count=440
+fi
